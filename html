@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма обратной связи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-container {
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            font-weight: bold;
+            width: 150px;
+            margin-right: 10px;
+            text-align: right;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            flex-grow: 1;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+
+        .valid {
+            color: green;
+        }
+
+        .invalid {
+            color: red;
+        }
+
+        input[type="submit"],
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Форма обратной связи</h2>
+
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="name">Как вас зовут:</label>
+                <input type="text" id="name" name="name" required pattern="[A-Za-zА-Яа-яЁё\s]{3,}" title="Имя должно содержать минимум 3 буквы и только буквы.">
+                <span class="status-icon" id="name-status"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Электронная почта:</label>
+                <input type="email" id="email" name="email" required>
+                <span class="status-icon" id="email-status"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Тема сообщения:</label>
+                <input type="text" id="subject" name="subject" required pattern=".{5,}" title="Тема должна содержать минимум 5 символов.">
+                <span class="status-icon" id="subject-status"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="extra" name="extra" pattern=".{0,200}" title="Максимум 200 символов.">
+                <span class="status-icon" id="extra-status"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Отправить сообщение">
+            </div>
+
+            <div class="error-message" id="error-message">Заполните все поля корректно.</div>
+        </form>
+
+        <button id="clearCookiesButton">Очистить cookies</button>
+    </div>
+
+    <script>
+       
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            document.cookie = name + "=; Max-Age=-99999999;";
+        }
+
+        function validateForm() {
+            const form = document.getElementById('feedbackForm');
+            if (!form.checkValidity()) {
+                document.getElementById('error-message').style.display = 'block';
+                return false;
+            } else {
+                document.getElementById('error-message').style.display = 'none';
+                return true;
+            }
+        }
+
+        function saveToCookies() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const extra = document.getElementById('extra').value;
+
+            setCookie('name', name, 7); 
+            setCookie('email', email, 7);
+            setCookie('subject', subject, 7);
+            setCookie('extra', extra, 7);
+        }
+
+        function clearCookies() {
+            eraseCookie('name');
+            eraseCookie('email');
+            eraseCookie('subject');
+            eraseCookie('extra');
+        }
+
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            if (validateForm()) {
+                saveToCookies(); 
+            }
+        });
+
+        document.getElementById('clearCookiesButton').addEventListener('click', clearCookies);
+    </script>
+
+</body>
+</html>
